@@ -1,19 +1,37 @@
-from bcrypt import gensalt, hashpw
-from core.database.database import get_db
+from datetime import datetime, timedelta
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from jose import JWTError, jwt
 
 from .model import User
 from .schema import UserSchema
+from core.database.database import get_db
+from core.config.secrets import SECRET_KEY, ALGORITHM, pwd_context
 
 user_router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
 @user_router.post("/sign-in/")
-async def get_user_token():
-    pass
-    return "JWT TOKEN"
+async def get_user_token(
+    user_schema:UserSchema,
+    db:Session = Depends(get_db)
+    ):
+    account = user_schema.account.lower()
+    password = user_schema.password
+
+    user:User = db.query(User).filter_by(
+        account = account
+    ).first()
+
+    if user is not None and pwd_context.verify(password, user.password):
+        encoded_jwt = jwt.encode({"user_id":user.id}, SECRET_KEY, ALGORITHM)
+        expire_date = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
+
+        return {"success":True, "data":{"token":encoded_jwt, "expire_at":expire_date}}
+
+    return {"success:" : False, "data": {"account/password is wrong"}}
 
 @user_router.post("/sign-up")
 async def create_user(
@@ -38,7 +56,7 @@ async def create_user(
     # 3. 계정 생성
     new_user = User(
         account = account,
-        password = hashpw(password.encode('utf-8'), gensalt())
+        password = pwd_context.hash(password)
     )
     db.add(new_user)
     db.commit()

@@ -31,6 +31,7 @@ platformdirs==2.5.2
 pyasn1==0.4.8
 pycparser==2.21
 pydantic==1.9.1
+PyMySQL==1.0.2
 python-dotenv==0.20.0
 python-jose==3.3.0
 python-multipart==0.0.5
