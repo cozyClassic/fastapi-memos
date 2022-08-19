@@ -1,11 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class UserSchema(BaseModel):
-    id: int | None = None
-    account: str
+    account: str = Field(default=None, min_length=3, max_length=30)
+    password: str = Field(default=None, min_length=6, max_lnegth=30)
     
     class Config:
-        title = "사용자 정보"
+        title = "계정, 비밀번호"
         orm_mode = True
 
 class Token(BaseModel):
