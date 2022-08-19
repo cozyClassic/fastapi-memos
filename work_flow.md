@@ -1,6 +1,6 @@
 # (예상) 작업순서
 
-## 1. install dependancy
+## 1. install dependancy (DONE)
 
 - python 3.10
 - bcrypt
@@ -8,7 +8,7 @@
   <br>
   <br>
 
-## 2. directory create
+## 2. directory create (DONE)
 
 - core
   - users
@@ -28,9 +28,8 @@
     - create_at, delete_at(model, schema)
   - database
     - engine, Session, get_db
-  - secrets
-    - DB_URL
-    - JWT_ALGO, JWT_SECRET_KEY
+  - config
+    - secrets : DB_URL, JWT_ALGO, JWT_SECRET_KEY
 - README.md
 - .gitignore
 - requirements.txt
