@@ -50,9 +50,11 @@
 1. model (done)
 2. schema (done)
 3. API
+
    - sign up (Done)
    - sign in (Done)
    - check JWT (Done)
+   - validator (Done)
      <br>
      <br>
 

@@ -39,6 +39,8 @@ async def create_user(
     user_schema:UserSchema,
     db:Session = Depends(get_db)
     ):
+    """account는 영문/숫자로만 3글자 이상이어야 함.
+    password는 6글자 이상이어야 함."""
     # 0. 자동변환 : 계정은 소문자로 일괄 치환
     account = user_schema.account.lower()
     password = user_schema.password
