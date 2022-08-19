@@ -36,23 +36,23 @@
   <br>
   <br>
 
-## 3. create main.py
+## 3. create main.py (Done)
 
 1. API
 
 <br>
 <br>
 
-## 3.5 create DB connection
+## 3.5 create DB connection (확인 안됨)
 
 ## 4. user
 
-1. model
-2. schema
+1. model (done)
+2. schema (done)
 3. API
-   - sign up
-   - sign in
-   - check JWT
+   - sign up (Done)
+   - sign in (Done)
+   - check JWT (Done)
      <br>
      <br>
 

@@ -2,12 +2,13 @@ from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from jose import JWTError, jwt
+from jose import jwt
 
 from .model import User
 from .schema import UserSchema
 from core.database.database import get_db
 from core.config.secrets import SECRET_KEY, ALGORITHM, pwd_context
+from core.helper.constatns import DATE_TIME_FORM
 
 user_router = APIRouter(
     responses={404: {"description": "Not found"}},
@@ -26,10 +27,10 @@ async def get_user_token(
     ).first()
 
     if user is not None and pwd_context.verify(password, user.password):
-        encoded_jwt = jwt.encode({"user_id":user.id}, SECRET_KEY, ALGORITHM)
-        expire_date = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
+        expire_date = (datetime.now() + timedelta(days=1)).strftime(DATE_TIME_FORM)
+        encoded_jwt = jwt.encode({"user_id":user.id, "expire_at":expire_date}, SECRET_KEY, ALGORITHM)
 
-        return {"success":True, "data":{"token":encoded_jwt, "expire_at":expire_date}}
+        return {"success":True, "data":{"token":encoded_jwt}}
 
     return {"success:" : False, "data": {"account/password is wrong"}}
 

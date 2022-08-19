@@ -1,0 +1,1 @@
+DATE_TIME_FORM = "%Y-%m-%d %H:%M:%S"
