@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException, status
 from core.config.secrets import SECRET_KEY, ALGORITHM
 from jose import jwt, JWTError
 
-from .constatns import DATE_TIME_FORM
+from .constants import DATE_TIME_FORM
 
 async def get_current_user(token:str = Depends("")):
     if not token:
@@ -22,6 +22,6 @@ async def get_current_user(token:str = Depends("")):
 
     token_expire = datetime.strptime(payload["expire_at"], DATE_TIME_FORM)
     if token_expire < datetime.now():
-        return {"success":False, "message": "token expired"}
+        raise credentials_exception
 
     return {"success":True, "user_id": payload["user_id"]}

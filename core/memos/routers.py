@@ -25,8 +25,6 @@ async def create_memo(
     ):
 
     user_data = await get_current_user(token)
-    if not user_data["success"]: 
-        return user_data
 
     new_memo:Memo = Memo(
         title=memo_create_schema.title,
@@ -101,8 +99,6 @@ async def update_memo(
     ):
 
     user_data = await get_current_user(token)
-    if not user_data["success"]: 
-        return user_data
 
     old_memo:Memo = db.query(Memo
         ).filter(Memo.id==memo_id, Memo.remove_at==None
@@ -133,8 +129,6 @@ async def delete_memo(
     db:Session = Depends(get_db)
 ):
     user_data = await get_current_user(token)
-    if not user_data["success"]: 
-        return user_data
     
     memo = db.query(Memo
         ).filter(Memo.id==memo_id, Memo.remove_at==None
