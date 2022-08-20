@@ -8,7 +8,7 @@ from .model import User
 from .schema import UserSchema
 from core.database.database import get_db
 from core.config.secrets import SECRET_KEY, ALGORITHM, pwd_context
-from core.helper.constatns import DATE_TIME_FORM
+from core.helper.constants import DATE_TIME_FORM
 
 user_router = APIRouter(
     responses={404: {"description": "Not found"}},

@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 from core.helper.author import AuthorSchema
+from core.reply.schema import ReplyGetSchema
 
 class MemoCreateSchema(BaseModel):
     title: str
@@ -15,3 +16,6 @@ class MemoUpdateSchema(MemoCreateSchema):
 
 class MemoGetSchema(AuthorSchema, MemoCreateSchema):
     pass
+
+class MemoDetailSchema(MemoGetSchema):
+    replies: list[ReplyGetSchema] | None = None
