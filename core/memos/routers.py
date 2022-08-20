@@ -11,7 +11,7 @@ from .schema import MemoCreateSchema, MemoGetSchema, MemoUpdateSchema
 from core.database.database import get_db
 from core.helper.login import get_current_user
 from core.helper.pages import PageInfo
-from core.helper.constatns import USER_ID_1_SAMPLE_JWT
+from core.helper.constants import USER_ID_1_SAMPLE_JWT
 
 memo_router = APIRouter(
     responses={404: {"description": "Not found"}},
