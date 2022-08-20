@@ -2,15 +2,15 @@ from datetime import datetime
 import math
 
 from fastapi import APIRouter, Depends, Header, Path, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 
 from .model import Memo
 from .schema import MemoCreateSchema, MemoDetailSchema, MemoGetSchema, MemoUpdateSchema
 from core.database.database import get_db
+from core.users.model import User
+from core.reply.model import Reply
 from core.helper.login import get_current_user
 from core.helper.constants import USER_ID_1_SAMPLE_JWT
-from core.reply.model import Reply
-from core.users.model import User
 
 memo_router = APIRouter(
     responses={404: {"description": "Not found"}},
@@ -41,27 +41,36 @@ async def get_memo_detail(
     memo_id:int = Path(default=1, ge=1),
     db:Session = Depends(get_db)
 ) -> MemoGetSchema:
+
+    memo_author = aliased(User)
+    reply_author= aliased(User)
     memo = db.query(Memo
-        ).join(Reply.author
         ).outerjoin(Memo.replies
+        ).join(memo_author, Memo.author
+        ).outerjoin(reply_author, Reply.author
         ).with_entities(
             Memo.title,
             Memo.content,
             Memo.create_at,
             Memo.author_id,
-            User.account.label("author"),
-            Reply
+            Reply,
+            memo_author.account.label("memo_author"),
+            reply_author.account.label("reply_author")
         ).filter(Memo.id==memo_id, Memo.remove_at==None, Reply.remove_at == None
         ).all()
 
     if not memo :
         raise HTTPException(status_code=404, detail="data not found")
-    
+
+    if memo[0].Reply is None :
+        return memo[0]
+
     _memo = dict(memo[0])
+    
     _memo["replies"] = [{
         "content":m.Reply.content,
         "author_id":m.Reply.author_id,
-        "author":m.Reply.author.account,
+        "reply_author":m.reply_author,
         "create_at": m.Reply.create_at
         } for m in memo]
 
@@ -79,7 +88,7 @@ async def get_memo_list(
         ).with_entities(
             Memo.title,
             Memo.create_at,
-            User.account,
+            User.account.label("memo_author"),
         ).filter(Memo.remove_at==None)
     
     total_count = memo_query.count()

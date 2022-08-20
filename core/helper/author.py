@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 
 class AuthorSchema(BaseModel):
-    author: str
+    memo_author: str | None
+    reply_author: str | None
     author_id: int
     create_at: date | datetime
