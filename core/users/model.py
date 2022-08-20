@@ -11,6 +11,7 @@ class User(Base):
     password = Column(String(100), nullable=False)
 
     memos = relationship("Memo", back_populates = "author")
+    replies = relationship("Reply", back_populates = "author")
 
     def __repr__(self):
         return f"user:{self.account}"
