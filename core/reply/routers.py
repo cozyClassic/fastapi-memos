@@ -17,7 +17,7 @@ reply_router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@reply_router.post("/{memo_id}")
+@reply_router.post("/{memo_id}", response_model= ReplyCreateSchema)
 async def create_reply(
     memo_id:int,
     memo_create_schema:ReplyCreateSchema,
@@ -43,3 +43,58 @@ async def create_reply(
     db.refresh(reply)
     
     return reply
+
+@reply_router.put("/{reply_id}", response_model = ReplyCreateSchema)
+async def update_reply(
+    update_memo:ReplyCreateSchema,
+    reply_id:int,
+    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+    db:Session = Depends(get_db),
+    ):
+
+    user_data = await get_current_user(token)
+
+    old_reply:Reply = db.query(Reply
+        ).filter(Reply.id==reply_id, Reply.remove_at==None
+        ).first()
+    
+    if not old_reply:
+        raise HTTPException(status_code=404, detail="data not found")
+    
+    if old_reply.author_id != user_data["user_id"]:
+        raise HTTPException(status_code=403, detail="Invalid authorization code.")
+    
+    old_reply.content = update_memo.content
+    
+    db.add(old_reply)
+    db.commit()
+    db.refresh(old_reply)
+    
+    return old_reply
+
+
+# # @reply_router.delete("/{reply_id}")
+# # async def delete_reply(
+# #     memo_id:int = Path(default=1, ge=1),
+# #     token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+# #     db:Session = Depends(get_db)
+# # ):
+# #     user_data = await get_current_user(token)
+    
+# #     memo = db.query(Memo
+# #         ).filter(Memo.id==memo_id, Memo.remove_at==None
+# #         ).first()
+
+# #     if not memo:
+# #         raise HTTPException(status_code=404, detail="data not found")
+
+# #     if memo.author_id != user_data["user_id"]:
+# #         raise HTTPException(status_code=403, detail="Invalid authorization code.")
+    
+# #     memo.remove_at = datetime.now()
+
+# #     db.add(memo)
+# #     db.commit()
+# #     db.refresh(memo)
+
+# #     return {"success":True}
