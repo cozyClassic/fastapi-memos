@@ -1,5 +1,8 @@
+import math
+
 from fastapi import APIRouter, Depends, Header, Path, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from core.users.model import User
 
@@ -56,3 +59,35 @@ async def get_memo_detail(
          raise HTTPException(status_code=404, detail="data not found")
 
     return memo
+
+@memo_router.get("/list/")
+async def get_memo_list(
+    page:int = Query(default=1, ge=1),
+    db:Session = Depends(get_db)
+):
+    PAGE_SIZE = 20
+    
+    memo_query = db.query(Memo, User
+        ).join(User
+        ).with_entities(
+            Memo.title,
+            Memo.create_at,
+            User.account,
+        ).filter(Memo.remove_at==None)
+    
+    total_count = memo_query.count()
+    total_page = math.ceil(total_count/PAGE_SIZE)
+    page_end = page >= total_page
+    memos = memo_query.offset(PAGE_SIZE*(page-1)
+        ).limit(PAGE_SIZE
+        ).all()
+
+    return {
+        "success" : True,
+        "data":memos,
+        "page_info":{
+            "total_count":total_count,
+            "total_page":total_page,
+            "page_end":page_end,
+        },
+    }
