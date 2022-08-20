@@ -65,7 +65,3 @@ async def create_user(
     db.commit()
     db.refresh(new_user)
     return {"success":True, "data":{"user_id":new_user.id}}
-
-@user_router.get("/")
-async def test():
-    return {"message": "Hello user Router"}
