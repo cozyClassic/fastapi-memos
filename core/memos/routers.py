@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, Header
 from sqlalchemy.orm import Session
 
+from core.users.model import User
+
 from .model import Memo
-from .schema import MemoCreateSchema
+from .schema import MemoCreateSchema, MemoGetSchema
 from core.database.database import get_db
 from core.helper.login import get_current_user
+from core.helper.constatns import USER_ID_1_SAMPLE_JWT
 
 memo_router = APIRouter(
     responses={404: {"description": "Not found"}},
@@ -13,8 +16,8 @@ memo_router = APIRouter(
 @memo_router.post("/")
 async def create_memo(
     memo_create_schema:MemoCreateSchema,
+    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
     db:Session = Depends(get_db),
-    token:str | None = Header(default=None)
     ):
 
     user_data = await get_current_user(token)
@@ -31,4 +34,3 @@ async def create_memo(
     db.refresh(new_memo)
     
     return new_memo
-
