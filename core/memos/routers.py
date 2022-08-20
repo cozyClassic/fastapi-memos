@@ -1,3 +1,4 @@
+from datetime import datetime
 import math
 
 from fastapi import APIRouter, Depends, Header, Path, HTTPException, Query
@@ -123,3 +124,32 @@ async def update_memo(
     db.refresh(old_memo)
     
     return old_memo
+
+
+@memo_router.delete("/{memo_id}")
+async def delete_memo(
+    memo_id:int = Path(default=1, ge=1),
+    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+    db:Session = Depends(get_db)
+):
+    user_data = await get_current_user(token)
+    if not user_data["success"]: 
+        return user_data
+    
+    memo = db.query(Memo
+        ).filter(Memo.id==memo_id, Memo.remove_at==None
+        ).first()
+
+    if not memo:
+        raise HTTPException(status_code=404, detail="data not found")
+
+    if memo.author_id != user_data["user_id"]:
+        raise HTTPException(status_code=403, detail="Invalid authorization code.")
+    
+    memo.remove_at = datetime.now()
+
+    db.add(memo)
+    db.commit()
+    db.refresh(memo)
+
+    return {"success":True}
