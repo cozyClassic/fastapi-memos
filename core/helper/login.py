@@ -7,6 +7,9 @@ from jose import jwt, JWTError
 from .constatns import DATE_TIME_FORM
 
 async def get_current_user(token:str = Depends("")):
+    if not token:
+        return {"success":False, "message": "token not found"}
+
     try:
         payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
     
