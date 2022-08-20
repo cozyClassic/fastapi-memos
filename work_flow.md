@@ -60,12 +60,12 @@
 
 ## 5. memo
 
-1. model
-2. schema
+1. model (Done)
+2. schema (Done)
 3. API
-   - GET list
-   - GET one
-   - CREATE memo
+   - GET list (Done)
+   - GET one (Done)
+   - CREATE memo (Done)
    - UPDATE memo
    - DELETE memo
 

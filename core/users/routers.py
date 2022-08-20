@@ -8,7 +8,7 @@ from .model import User
 from .schema import UserSchema
 from core.database.database import get_db
 from core.config.secrets import SECRET_KEY, ALGORITHM, pwd_context
-from core.helper.constatns import DATE_TIME_FORM
+from core.helper.constants import DATE_TIME_FORM
 
 user_router = APIRouter(
     responses={404: {"description": "Not found"}},
@@ -41,22 +41,15 @@ async def create_user(
     ):
     """account는 영문/숫자로만 3글자 이상이어야 함.
     password는 6글자 이상이어야 함."""
-    # 0. 자동변환 : 계정은 소문자로 일괄 치환
     account = user_schema.account.lower()
     password = user_schema.password
 
-    # 1. 밸리데이션
-    # 계정은 소문자(자동변환)+숫자만. 3글자 이상
-    # 비밀번호는 6글자 이상, 72글자(72bytes)이하
-
-    # 2. 계정 중복 검색
     duplicated_user = db.query(User).filter_by(
         account= account
     ).first()
     if duplicated_user is not None :
         return {"success" : False, "data": "account duplicated"}
     
-    # 3. 계정 생성
     new_user = User(
         account = account,
         password = pwd_context.hash(password)
@@ -65,7 +58,3 @@ async def create_user(
     db.commit()
     db.refresh(new_user)
     return {"success":True, "data":{"user_id":new_user.id}}
-
-@user_router.get("/")
-async def test():
-    return {"message": "Hello user Router"}
