@@ -2,8 +2,9 @@ from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from sqlalchemy.orm import relationship
 
 from core.helper.timestamps import Removable
+from core.database.database import Base
 
-class Memo(Removable):
+class Memo(Base, Removable):
     __tablename__ = "memo"
 
     id = Column(Integer, primary_key=True)
