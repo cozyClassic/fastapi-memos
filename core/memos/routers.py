@@ -19,7 +19,7 @@ memo_router = APIRouter(
 @memo_router.post("/")
 async def create_memo(
     memo_create_schema:MemoCreateSchema,
-    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+    token:str = Header(description=f"sample JWT @@ {USER_ID_1_SAMPLE_JWT}"),
     db:Session = Depends(get_db),
     ):
 
@@ -103,7 +103,7 @@ async def get_memo_list(
 async def update_memo(
     update_memo:MemoUpdateSchema,
     memo_id:int = Path(default=None, ge=1),
-    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+    token:str = Header(description=f"sample JWT @@ {USER_ID_1_SAMPLE_JWT}"),
     db:Session = Depends(get_db),
     ):
 
@@ -134,7 +134,7 @@ async def update_memo(
 @memo_router.delete("/{memo_id}")
 async def delete_memo(
     memo_id:int = Path(default=1, ge=1),
-    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+    token:str = Header(description=f"sample JWT @@ {USER_ID_1_SAMPLE_JWT}"),
     db:Session = Depends(get_db)
 ):
     user_data = await get_current_user(token)
