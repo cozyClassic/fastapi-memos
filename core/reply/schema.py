@@ -8,8 +8,5 @@ class ReplyCreateSchema(BaseModel):
     class Config:
         orm_mode = True
 
-class ReplyUpdateSchema(ReplyCreateSchema):
-    content: str
-
 class ReplyGetSchema(AuthorSchema, ReplyCreateSchema):
     pass

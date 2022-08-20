@@ -1,16 +1,13 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, Header, Path, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy.orm import Session
 
-from core.users.model import User
-
 from .model import Reply
-from .schema import ReplyCreateSchema, ReplyGetSchema, ReplyUpdateSchema
+from .schema import ReplyCreateSchema
 from core.memos.model import Memo
 from core.database.database import get_db
 from core.helper.login import get_current_user
-from core.helper.pages import PageInfo
 from core.helper.constants import USER_ID_1_SAMPLE_JWT
 
 reply_router = APIRouter(
