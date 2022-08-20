@@ -7,8 +7,9 @@ from sqlalchemy.orm import Session
 from core.users.model import User
 
 from .model import Memo
-from .schema import MemoCreateSchema, MemoGetSchema, MemoUpdateSchema
+from .schema import MemoCreateSchema, MemoDetailSchema, MemoGetSchema, MemoUpdateSchema
 from core.database.database import get_db
+from core.reply.model import Reply
 from core.helper.login import get_current_user
 from core.helper.pages import PageInfo
 from core.helper.constants import USER_ID_1_SAMPLE_JWT
@@ -37,26 +38,36 @@ async def create_memo(
     
     return new_memo
 
-@memo_router.get("/{memo_id}", response_model = MemoGetSchema)
+@memo_router.get("/{memo_id}", response_model = MemoDetailSchema)
 async def get_memo_detail(
     memo_id:int = Path(default=1, ge=1),
     db:Session = Depends(get_db)
 ) -> MemoGetSchema:
-    memo = db.query(Memo, User
-        ).join(User
+    memo = db.query(Memo
+        ).join(Memo.replies
+        ).join(Reply.author
         ).with_entities(
             Memo.title,
             Memo.content,
             Memo.create_at,
             Memo.author_id,
-            User.account.label("author_account")
-        ).filter(Memo.id==memo_id, Memo.remove_at==None
-        ).first()
+            User.account.label("author"),
+            Reply
+        ).filter(Memo.id==memo_id, Memo.remove_at==None, Reply.remove_at == None
+        ).all()
+
+    _memo = dict(memo[0])
+    _memo["replies"] = [{
+        "content":m.Reply.content,
+        "author_id":m.Reply.author_id,
+        "author":m.Reply.author.account,
+        "create_at": m.Reply.create_at
+        } for m in memo]
 
     if not memo :
         raise HTTPException(status_code=404, detail="data not found")
 
-    return memo
+    return _memo
 
 @memo_router.get("/list/")
 async def get_memo_list(

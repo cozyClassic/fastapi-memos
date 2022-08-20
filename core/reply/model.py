@@ -13,7 +13,7 @@ class Reply(Base, Removable):
     author_id = Column(Integer, ForeignKey("user.id"))
 
     memo = relationship("Memo", back_populates = "replies")
-    author = relationship("User", back_populates = "replies")
+    author = relationship("User", back_populates = "replies", lazy="joined")
 
     def __repr__(self):
-        return f"memo:{self.memo_id}, author:{self.author_id}"
+        return f"reply:{self.content}"
