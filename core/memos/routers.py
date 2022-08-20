@@ -4,15 +4,13 @@ import math
 from fastapi import APIRouter, Depends, Header, Path, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from core.users.model import User
-
 from .model import Memo
 from .schema import MemoCreateSchema, MemoDetailSchema, MemoGetSchema, MemoUpdateSchema
 from core.database.database import get_db
-from core.reply.model import Reply
 from core.helper.login import get_current_user
-from core.helper.pages import PageInfo
 from core.helper.constants import USER_ID_1_SAMPLE_JWT
+from core.reply.model import Reply
+from core.users.model import User
 
 memo_router = APIRouter(
     responses={404: {"description": "Not found"}},
@@ -21,7 +19,7 @@ memo_router = APIRouter(
 @memo_router.post("/")
 async def create_memo(
     memo_create_schema:MemoCreateSchema,
-    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+    token:str = Header(description=f"sample JWT @@ {USER_ID_1_SAMPLE_JWT}"),
     db:Session = Depends(get_db),
     ):
 
@@ -44,8 +42,8 @@ async def get_memo_detail(
     db:Session = Depends(get_db)
 ) -> MemoGetSchema:
     memo = db.query(Memo
-        ).join(Memo.replies
         ).join(Reply.author
+        ).outerjoin(Memo.replies
         ).with_entities(
             Memo.title,
             Memo.content,
@@ -56,6 +54,9 @@ async def get_memo_detail(
         ).filter(Memo.id==memo_id, Memo.remove_at==None, Reply.remove_at == None
         ).all()
 
+    if not memo :
+        raise HTTPException(status_code=404, detail="data not found")
+    
     _memo = dict(memo[0])
     _memo["replies"] = [{
         "content":m.Reply.content,
@@ -63,9 +64,6 @@ async def get_memo_detail(
         "author":m.Reply.author.account,
         "create_at": m.Reply.create_at
         } for m in memo]
-
-    if not memo :
-        raise HTTPException(status_code=404, detail="data not found")
 
     return _memo
 
@@ -105,7 +103,7 @@ async def get_memo_list(
 async def update_memo(
     update_memo:MemoUpdateSchema,
     memo_id:int = Path(default=None, ge=1),
-    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+    token:str = Header(description=f"sample JWT @@ {USER_ID_1_SAMPLE_JWT}"),
     db:Session = Depends(get_db),
     ):
 
@@ -136,7 +134,7 @@ async def update_memo(
 @memo_router.delete("/{memo_id}")
 async def delete_memo(
     memo_id:int = Path(default=1, ge=1),
-    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+    token:str = Header(description=f"sample JWT @@ {USER_ID_1_SAMPLE_JWT}"),
     db:Session = Depends(get_db)
 ):
     user_data = await get_current_user(token)

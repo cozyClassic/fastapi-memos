@@ -18,7 +18,7 @@ reply_router = APIRouter(
 async def create_reply(
     memo_id:int,
     memo_create_schema:ReplyCreateSchema,
-    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+    token:str = Header(description=f"sample JWT @@ {USER_ID_1_SAMPLE_JWT}"),
     db:Session = Depends(get_db),
     ) -> ReplyCreateSchema:
 
@@ -45,7 +45,7 @@ async def create_reply(
 async def update_reply(
     update_memo:ReplyCreateSchema,
     reply_id:int,
-    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+    token:str = Header(description=f"sample JWT @@ {USER_ID_1_SAMPLE_JWT}"),
     db:Session = Depends(get_db),
     ):
 

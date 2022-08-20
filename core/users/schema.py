@@ -17,10 +17,3 @@ class UserSchema(BaseModel):
     class Config:
         title = "계정, 비밀번호"
         orm_mode = True
-
-class Token(BaseModel):
-    access_token: str
-
-
-class TokenData(BaseModel):
-    user_id: int

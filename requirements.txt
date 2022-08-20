@@ -1,3 +1,5 @@
+# python==3.10.4
+# MYSQL==5.7
 # pip install "fastapi[all]"
 # pip install sqlalchemy
 # pip install "python-jose[cryptography]"

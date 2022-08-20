@@ -1,10 +1,12 @@
 from datetime import datetime
 
 from fastapi import Depends, HTTPException, status
-from core.config.secrets import SECRET_KEY, ALGORITHM
-from jose import jwt, JWTError
+from jose import JWTError, jwt
 
+from core.config.secrets import ALGORITHM, SECRET_KEY
 from .constants import DATE_TIME_FORM
+
+
 
 async def get_current_user(token:str = Depends("")):
     if not token:
