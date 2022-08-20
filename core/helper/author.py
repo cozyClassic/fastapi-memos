@@ -5,4 +5,3 @@ class AuthorSchema(BaseModel):
     author_account: str
     author_id: int
     create_at: date | datetime
-    remove_at: datetime | None
