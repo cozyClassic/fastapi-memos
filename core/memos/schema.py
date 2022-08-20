@@ -9,5 +9,9 @@ class MemoCreateSchema(BaseModel):
     class Config:
         orm_mode = True
 
+class MemoUpdateSchema(MemoCreateSchema):
+    title: str|None
+    content: str|None
+
 class MemoGetSchema(AuthorSchema, MemoCreateSchema):
     pass

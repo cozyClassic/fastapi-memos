@@ -2,12 +2,11 @@ import math
 
 from fastapi import APIRouter, Depends, Header, Path, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
 from core.users.model import User
 
 from .model import Memo
-from .schema import MemoCreateSchema, MemoGetSchema
+from .schema import MemoCreateSchema, MemoGetSchema, MemoUpdateSchema
 from core.database.database import get_db
 from core.helper.login import get_current_user
 from core.helper.pages import PageInfo
@@ -56,7 +55,7 @@ async def get_memo_detail(
         ).first()
 
     if not memo :
-         raise HTTPException(status_code=404, detail="data not found")
+        raise HTTPException(status_code=404, detail="data not found")
 
     return memo
 
@@ -91,3 +90,36 @@ async def get_memo_list(
             "page_end":page_end,
         },
     }
+
+@memo_router.patch("/{memo_id}", response_model = MemoCreateSchema)
+async def update_memo(
+    update_memo:MemoUpdateSchema,
+    memo_id:int = Path(default=None, ge=1),
+    token:str = Header(description=f"sample JWT :{USER_ID_1_SAMPLE_JWT}"),
+    db:Session = Depends(get_db),
+    ):
+
+    user_data = await get_current_user(token)
+    if not user_data["success"]: 
+        return user_data
+
+    old_memo:Memo = db.query(Memo
+        ).filter(Memo.id==memo_id, Memo.remove_at==None
+        ).first()
+    
+    if not old_memo:
+        raise HTTPException(status_code=404, detail="data not found")
+    
+    if old_memo.author_id != user_data["user_id"]:
+        raise HTTPException(status_code=403, detail="Invalid authorization code.")
+    
+    if update_memo.title is not None:
+        old_memo.title = update_memo.title
+    if update_memo.content is not None:
+        old_memo.content = update_memo.content
+    
+    db.add(old_memo)
+    db.commit()
+    db.refresh(old_memo)
+    
+    return old_memo
