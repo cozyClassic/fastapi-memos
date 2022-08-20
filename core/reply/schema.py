@@ -9,4 +9,5 @@ class ReplyCreateSchema(BaseModel):
         orm_mode = True
 
 class ReplyGetSchema(AuthorSchema, ReplyCreateSchema):
+    reply_id:int
     pass

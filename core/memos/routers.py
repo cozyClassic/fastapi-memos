@@ -68,6 +68,7 @@ async def get_memo_detail(
     _memo = dict(memo[0])
     
     _memo["replies"] = [{
+        "reply_id": m.Reply.id,
         "content":m.Reply.content,
         "author_id":m.Reply.author_id,
         "reply_author":m.reply_author,
