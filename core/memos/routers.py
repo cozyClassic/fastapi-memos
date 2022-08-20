@@ -42,8 +42,8 @@ async def get_memo_detail(
     db:Session = Depends(get_db)
 ) -> MemoGetSchema:
     memo = db.query(Memo
-        ).join(Memo.replies
         ).join(Reply.author
+        ).outerjoin(Memo.replies
         ).with_entities(
             Memo.title,
             Memo.content,
@@ -54,6 +54,9 @@ async def get_memo_detail(
         ).filter(Memo.id==memo_id, Memo.remove_at==None, Reply.remove_at == None
         ).all()
 
+    if not memo :
+        raise HTTPException(status_code=404, detail="data not found")
+    
     _memo = dict(memo[0])
     _memo["replies"] = [{
         "content":m.Reply.content,
@@ -61,9 +64,6 @@ async def get_memo_detail(
         "author":m.Reply.author.account,
         "create_at": m.Reply.create_at
         } for m in memo]
-
-    if not memo :
-        raise HTTPException(status_code=404, detail="data not found")
 
     return _memo
 
